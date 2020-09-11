@@ -65,10 +65,12 @@
           <v-divider class="mx-1 mt-3 mb-4"></v-divider>
           <v-row>
             <v-col cols="12" md="6" sm="6">
+              <v-form ref="formComments" v-model="valid">
                 <p class="headline">Оставить комментарий</p>
                 <p>Ваше имя</p>
                 <v-text-field
                   v-model="author"
+                  :rules="ruleRequired"
                   solo
                   flat
                 ></v-text-field>
@@ -76,6 +78,7 @@
                 <v-textarea
                   v-model="text"
                   color="black"
+                  :rules="ruleRequired"
                   outlined
                   auto-grow
                 >
@@ -164,6 +167,7 @@ export default {
     futureAddress: '115088 Москва, ул. 2-я Машиностроения, д. 7 стрю 1',
     futureLogoSrc: '/images/logo.png',
 
+    ruleRequired: [(v) => !!v || 'Необходимо заполнить поле'],
     author: '',
     text: '',
     valid: false,
@@ -177,6 +181,8 @@ export default {
         .then((res) => {
           console.log(res.data)
           this.comments.unshift(res.data)
+          this.author = ''
+          this.text = ''
         })
         .catch((error) => {
           console.log(error)
