@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +13,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/{any?}', function () {
+Route::get('/', function() {
     return view('comments');
 });
+
+Route::get('/comments', [CommentsController::class, 'show']);
+
+Route::get('/comments/create', [CommentsController::class, 'create']);
