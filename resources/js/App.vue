@@ -65,20 +65,25 @@
           <v-divider class="mx-1 mt-3 mb-4"></v-divider>
           <v-row>
             <v-col cols="12" md="6" sm="6">
-              <v-form ref="form" v-model="valid" lazy-validation>
                 <p class="headline">Оставить комментарий</p>
                 <p>Ваше имя</p>
                 <v-text-field
                   v-model="author"
-                  required
                   solo
                   flat
                 ></v-text-field>
                 <p>Ваш комментарий</p>
-                <v-textarea v-model="text" required outlined auto-grow>
+                <v-textarea
+                  v-model="text"
+                  color="black"
+                  outlined
+                  auto-grow
+                >
                 </v-textarea>
                 <v-flex class="d-flex justify-end">
-                  <v-btn outlined @click="commentSend">Отправить</v-btn>
+                  <v-btn outlined :disabled="!valid" @click="commentCreate"
+                    >Отправить</v-btn
+                  >
                 </v-flex>
               </v-form>
             </v-col>
@@ -138,41 +143,46 @@
 </template>
 
 <script>
+import axios from 'axios'
+
+function Comment({ id, author, text, time, date }) {
+  this.id = id
+  this.author = author
+  this.text = text
+  this.time = time
+  this.date = date
+}
+
 export default {
   name: 'App',
 
   data: () => ({
-    comments: [
-      {
-        id: '1',
-        author: 'Савва',
-        text:
-          'Спасибо за Ваше тестовое задание. Оно, действительно, изумительное',
-        time: '18:05',
-        date: '07.02.2014',
-      },
-      {
-        id: '2',
-        author: 'asdasdasdasdasdasdasasdasd',
-        text:
-          'Спасибо за Ваше тестовое задание. Оно, действительно, изумительное. Спасибо за Ваше тестовое задание. Оно, действительно, изумительное. Спасибо за Ваше тестовое задание. Оно, действительно, изумительное',
-        time: '18:05',
-        date: '07.02.2014',
-      },
-      {
-        id: '3',
-        author: 'a',
-        text: 'Спасибо за Ваше тес, действительно, изумительное',
-        time: '18:05',
-        date: '07.02.2014',
-      },
-    ],
+    comments: [],
 
     futurePhone: 'Телефон:(499)340-94-71',
     futureEmail: 'info@future-group.ru',
     futureAddress: '115088 Москва, ул. 2-я Машиностроения, д. 7 стрю 1',
     futureLogoSrc: '/images/logo.png',
+
+    author: '',
+    text: '',
+    valid: false,
   }),
+
+  methods: {
+    async commentCreate() {
+      console.log('method commentCreate')
+      axios
+        .get(`/comments/create?author=${this.author}&text=${this.text}`)
+        .then((res) => {
+          console.log(res.data)
+          this.comments.unshift(res.data)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+  },
 
   computed: {
     theme() {
@@ -180,8 +190,17 @@ export default {
     },
   },
 
-  mounted() {
-    console.log('App.vue was mounted')
+  created() {
+    console.log('created')
+    axios
+      .get('/comments')
+      .then((res) => {
+        console.log(res.data)
+        this.comments = res.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   },
 }
 </script>
